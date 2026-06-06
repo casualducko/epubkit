@@ -321,7 +321,7 @@ def process_image(image_bytes: bytes, filename: str, options: ImageOptions = Non
 
 def generate_cover_image(title: str, author: str,
                          width: int = X4_WIDTH, height: int = X4_HEIGHT,
-                         gray_levels: list = None) -> bytes:
+                         gray_levels: list[int] | None = None) -> bytes:
     """
     Generate a simple cover image from title and author text.
     If gray_levels is given, quantize to the device palette (with dithering)
