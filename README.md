@@ -2,7 +2,7 @@
 
 A web-based EPUB optimizer for e-ink readers. Drop in any EPUB and get back a clean, optimized file ready for your device.
 
-Originally built for the [Xteink X4](https://xteink.com/) (480x800 portrait e-ink display, 4-level grayscale, SSD1677 controller, ESP32-C3). Now also supports the smaller [Xteink X3](https://www.xteink.com/products/xteink-x3) (528x792 display, 1-bit black/white on stock firmware) via a device toggle, and works with any Xteink reader or e-ink device that supports EPUB.
+Originally built for the [Xteink X4](https://xteink.com/) (480x800 portrait e-ink display, 4-level grayscale, SSD1677 controller, ESP32-C3). Now also supports the smaller [Xteink X3](https://www.xteink.com/products/xteink-x3) (528x792 display, same controller) via a device toggle, and works with any Xteink reader or e-ink device that supports EPUB.
 
 ## Processing pipeline
 
@@ -16,7 +16,7 @@ epubkit runs a 20-step pipeline on every EPUB:
 | 4 | **Read metadata** — extracts title, author, series, language, cover reference |
 | 5 | **Apply metadata edits** — overwrites title/author if the user edited them in the UI |
 | 6 | **Find content files** — catalogs all XHTML, CSS, image, and font files in the EPUB |
-| 7 | **Process images** — converts all images to baseline JPEG, resizes to the device screen (480x800 for X4, 528x792 for X3; max 1024x1024), applies grayscale quantization with Floyd-Steinberg dithering (4-level on X4, 2-level black/white on X3), autocontrast histogram stretching, and contrast boost. Light Novel mode rotates/splits landscape images |
+| 7 | **Process images** — converts all images to baseline JPEG, resizes to the device screen (480x800 for X4, 528x792 for X3; max 1024x1024), applies 4-level grayscale quantization with Floyd-Steinberg dithering, autocontrast histogram stretching, and contrast boost. Light Novel mode rotates/splits landscape images |
 | 8 | **Fix SVG covers** — unwraps SVG-wrapped cover images (common in Gutenberg/store EPUBs) |
 | 9 | **Generate cover** — creates a title/author cover image if the book doesn't have one |
 | 10 | **Update references** — rewrites all internal hrefs and srcs to match renamed image files |
@@ -57,7 +57,7 @@ The optimizer is tuned for these hardware constraints:
 | Spec | X4 | X3 |
 |------|----|----|
 | Display | 480x800 portrait (4.3" panel) | 528x792 portrait (3.7" panel) |
-| Grayscale | 4 levels (SSD1677): black, dark gray, light gray, white | 1-bit black/white (stock firmware reads only the first bit plane) |
+| Grayscale | 4 levels (SSD1677): black, dark gray, light gray, white | Same 4-level SSD1677 hardware |
 | Processor | ESP32-C3, 160MHz | ESP32-C3 |
 | RAM | 380KB usable | 380KB usable |
 | Max image | 1024x1024 pixels | 1024x1024 pixels |
@@ -66,13 +66,13 @@ The optimizer is tuned for these hardware constraints:
 
 Image fit boxes match the [CrossPoint reference converter](https://github.com/crosspoint-reader/crosspoint-reader) device profiles (X4: 480x800, X3: 528x792). The panels scan in landscape, but the readers display portrait — images sized to the portrait box render sharp without reader-side upscaling.
 
-Note: the X3's SSD1677 controller is hardware-capable of 4-level grayscale, but stock firmware only renders black/white — so the X3 profile dithers to 2 levels, which looks better than letting the device discard gray data. (Custom firmware like [CrossPoint Reader](https://github.com/crosspoint-reader/crosspoint-reader) adds grayscale support; if you run it, the X4 profile's 4-level output also works on an X3.)
+Note: stock X3 firmware does not render images inside EPUBs at all (hardware-verified — original and processed files alike show blank image pages). X3 image output therefore targets custom firmware such as [CrossPoint](https://github.com/crosspoint-reader/crosspoint-reader)/CrossInk, which renders 4-level grayscale on the X3's panel.
 
 ## Image processing details
 
 - **Format**: All images converted to baseline JPEG (progressive breaks many e-ink readers)
 - **Resize**: Fit within the device screen (480x800 X4, 528x792 X3, portrait), hard clamp at 1024x1024
-- **Grayscale**: X4 — 4-level quantization matching SSD1677 palette (0, 85, 170, 255); X3 — 2-level black/white (0, 255); both with Floyd-Steinberg dithering
+- **Grayscale**: 4-level quantization matching the SSD1677 palette (0, 85, 170, 255) with Floyd-Steinberg dithering (both devices)
 - **Contrast**: Auto-histogram stretching (`ImageOps.autocontrast`) followed by 1.5x contrast boost
 - **Subsampling**: 4:2:0 for grayscale (all RGB channels identical, saves ~15-20%), 4:4:4 for color
 - **Transparency**: Alpha composited onto white background

@@ -6,9 +6,10 @@ contrast boost, Light Novel mode.
 Device profiles (display orientation, portrait):
   X4 (SSD1677 controller):
     - Display: 480x800, 4-level grayscale (black, dark gray, light gray, white)
-  X3 (SSD1677 controller, stock firmware):
-    - Display: 528x792, 1-bit black/white (firmware only reads the first
-      bit plane, so gray data is discarded — dither to 2 levels instead)
+  X3 (SSD1677 controller):
+    - Display: 528x792, same 4-level grayscale hardware
+    - Note: stock X3 firmware does not render EPUB images at all; image
+      output targets CrossPoint-family firmware
   Both:
     - Max image: 1024x1024
     - RAM: 380KB — smaller images = faster rendering
@@ -36,8 +37,10 @@ DEVICE_PROFILES = {
     'x3': {
         'width': 528,
         'height': 792,
-        # Stock X3 firmware renders 1-bit black/white only
-        'gray_levels': [0, 255],
+        # Same SSD1677 4-level grayscale as the X4. Stock X3 firmware does
+        # not render EPUB images at all (hardware-verified), so image output
+        # targets CrossPoint-family firmware, which renders grayscale.
+        'gray_levels': [0, 85, 170, 255],
         'label': 'Xteink X3',
     },
 }

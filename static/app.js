@@ -12,7 +12,7 @@ const qualityValue = document.getElementById('quality-value');
 const downloadAllBtn = document.getElementById('download-all-btn');
 
 let uploadedFiles = []; // {task_id, filename, metadata, file_size}
-let selectedDevice = 'x4'; // 'x4' (480x800, 4-level gray) or 'x3' (528x792, B/W)
+let selectedDevice = 'x4'; // 'x4' (480x800) or 'x3' (528x792), both 4-level gray
 
 // ==================== Upload ====================
 
@@ -153,13 +153,6 @@ document.querySelectorAll('.device-btn').forEach(btn => {
         document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedDevice = btn.dataset.device;
-
-        const hint = document.getElementById('grayscale-hint');
-        if (hint) {
-            hint.textContent = selectedDevice === 'x3'
-                ? 'Dither images to black & white'
-                : 'Convert images for e-ink display';
-        }
     });
 });
 

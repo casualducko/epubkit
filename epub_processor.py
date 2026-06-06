@@ -38,7 +38,7 @@ from epub_structure import (
 @dataclass
 class ProcessingOptions:
     """All user-configurable processing options."""
-    device: str = DEFAULT_DEVICE  # 'x4' (480x800, 4-level) or 'x3' (528x792, B/W)
+    device: str = DEFAULT_DEVICE  # 'x4' (480x800) or 'x3' (528x792), both 4-level gray
     grayscale: bool = True
     contrast_boost: bool = True
     contrast_factor: float = 1.5  # Higher default for low-bit-depth displays
