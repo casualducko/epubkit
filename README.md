@@ -66,7 +66,7 @@ The optimizer is tuned for these hardware constraints:
 
 Image fit boxes match the [CrossPoint reference converter](https://github.com/crosspoint-reader/crosspoint-reader) device profiles (X4: 480x800, X3: 528x792). The panels scan in landscape, but the readers display portrait — images sized to the portrait box render sharp without reader-side upscaling.
 
-Note: stock X3 firmware does not render images inside EPUBs at all (hardware-verified — original and processed files alike show blank image pages). X3 image output therefore targets custom firmware such as [CrossPoint](https://github.com/crosspoint-reader/crosspoint-reader)/CrossInk, which renders 4-level grayscale on the X3's panel.
+Note: stock Xteink firmware (X3 and X4 alike) does not render images inside EPUBs at all — hardware-verified on both devices with unmodified store EPUBs and a diagnostic EPUB covering 8 encoding variants (JPEG parameter permutations, PNG, BMP); every image page renders blank while text renders normally. Image optimization therefore benefits custom firmware such as [CrossPoint](https://github.com/crosspoint-reader/crosspoint-reader)/CrossInk, which renders 4-level grayscale images on both panels.
 
 ## Image processing details
 
