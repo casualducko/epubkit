@@ -24,8 +24,9 @@ from PIL import Image, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 # Device screen profiles in display orientation (portrait), matching the
 # CrossPoint reference converter (X4: 480x800, X3: 528x792). The panels scan
-# in landscape (e.g. 800x480) but the readers display portrait, so images
-# must fit the portrait box or the reader upscales them blurrily.
+# in landscape (e.g. 800x480) but the readers display portrait — and render
+# images at native size without upscaling, so images sized to the old
+# landscape box drew as a small box instead of filling the screen.
 DEVICE_PROFILES = {
     'x4': {
         'width': 480,
@@ -114,8 +115,8 @@ def is_progressive_jpeg(image_bytes: bytes) -> bool:
 def _quantize_to_levels(img: Image.Image, levels: list[int]) -> Image.Image:
     """
     Quantize grayscale image to the device's e-ink levels with
-    Floyd-Steinberg dithering (e.g. [0, 85, 170, 255] for X4,
-    [0, 255] for X3 black/white).
+    Floyd-Steinberg dithering (e.g. [0, 85, 170, 255] for the SSD1677
+    4-level palette; any level count works, e.g. [0, 255] for 1-bit).
     Uses PIL's built-in quantize with a custom palette for speed.
     """
     # Build a grayscale palette image from the device levels
